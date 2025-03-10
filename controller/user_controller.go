@@ -70,3 +70,18 @@ func (uc *userController) LogIn(c echo.Context) error {
 	//リクエストが正常に処理された時に204'no Content'を返す
 	return c.NoContent(http.StatusOK)
 }
+
+// ログアウト
+func (uc *userController) LogOut(c echo.Context) error {
+	cookie := new(http.Cookie)
+	cookie.Name = "token"
+	cookie.Value = ""
+	cookie.Expires = time.Now()
+	cookie.Path = "/"
+	cookie.Domain = os.Getenv("API_DOMAIN")
+	//cookie.Secure = true
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteNoneMode
+	c.SetCookie(cookie)
+	return c.NoContent(http.StatusOK)
+}
