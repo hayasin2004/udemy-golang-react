@@ -11,7 +11,7 @@ import (
 
 type IUserUseCase interface {
 	SignUp(user model.User) (model.UserResponse, error)
-	Login(user model.User) (string error)
+	Login(user model.User) (string, error)
 }
 
 type userUseCase struct {

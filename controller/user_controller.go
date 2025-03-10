@@ -27,7 +27,7 @@ type userController struct {
 	uu useCase.IUserUseCase
 }
 
-func newUserController(uu useCase.IUserUseCase) IUserController {
+func NewUserController(uu useCase.IUserUseCase) IUserController {
 	return &userController{uu}
 }
 
