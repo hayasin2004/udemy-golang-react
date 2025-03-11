@@ -22,7 +22,7 @@ type ITaskRepository interface {
 	UpdateTask(task *model.Task, userId uint, taskId uint) error
 
 	//特定のタスクを削除　→　今回はユーザー認証なしで削除？？
-	DeleteTask(task model.Task, taskId uint) error
+	DeleteTask(userId uint, taskId uint) error
 }
 
 type taskRepository struct {
@@ -43,7 +43,7 @@ func (tr *taskRepository) GetAllTasks(tasks *[]model.Task, userId uint) error {
 }
 
 func (tr *taskRepository) GetTaskById(task *model.Task, userId uint, taskId uint) error {
-	if err := tr.db.Joins("User").Where("user_id=", userId).First(task, taskId).Error; err != nil {
+	if err := tr.db.Joins("User").Where("user_id=?", userId).First(task, taskId).Error; err != nil {
 		return err
 	}
 	return nil
@@ -52,7 +52,6 @@ func (tr *taskRepository) GetTaskById(task *model.Task, userId uint, taskId uint
 func (tr *taskRepository) CreateTask(task *model.Task) error {
 	if err := tr.db.Create(task).Error; err != nil {
 		return err
-
 	}
 	return nil
 }
@@ -83,7 +82,7 @@ func (tr *taskRepository) UpdateTask(task *model.Task, userId uint, taskId uint)
 // 今回のTodoリストでいうと何か特定の物をいじるというときはresultのように一旦インスタンス化して持っておくという考えが多い。
 // Createみたいに特定の物を探す操作が不要ならば、成功もしくは失敗のみの判定だけどいい。
 
-func (tr *taskRepository) DeleteTask(task *model.Task, userId uint, taskId uint) error {
+func (tr *taskRepository) DeleteTask(userId uint, taskId uint) error {
 	result := tr.db.Where("id=? AND user_id=?", taskId, userId).Delete(&model.Task{})
 	if result.Error != nil {
 		return result.Error
