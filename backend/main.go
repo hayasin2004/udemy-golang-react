@@ -6,6 +6,7 @@ import (
 	"udemy-golang-react/repository"
 	"udemy-golang-react/router"
 	useCase "udemy-golang-react/usecase"
+	"udemy-golang-react/validator"
 )
 
 func main() {
@@ -15,15 +16,17 @@ func main() {
 	//これはスタートライン。（データベース接続）
 	db := db.NewDB()
 
-	//第一走者（データベースの専門家）　→　データベース接続を受け取り、ユーザー情報の管理、取得する専門家。
+	//第一走者（データベースの専門家とバリデートの専門家）　→　データベース接続を受け取り、ユーザー情報の管理、取得する専門家、データを検証する専門家
 	//データベースとの直接的なやり取り
+	userValidator := validator.NewUserValidator()
+	taskValidator := validator.NewTaskValidator()
 	userRepository := repository.NewUserRepository(db)
 	taskRepository := repository.NewTaskRepository(db)
 
 	//第二走者（ビジネスロジックの専門家）　→　ユーザーリポジトリ―を利用して、ユーザー関連のビジネスロジックを実行するプランナー
 	//データを処理し実行
-	userUseCase := useCase.NewUserUseCase(userRepository)
-	taskUseCase := useCase.NewTaskUseCase(taskRepository)
+	userUseCase := useCase.NewUserUseCase(userRepository, userValidator)
+	taskUseCase := useCase.NewTaskUseCase(taskRepository, taskValidator)
 
 	//第三走者（司会者専門）ユーザーインターフェイスを管理し、ユーザーのリクエストを受け取り、ユースケースにリクエストを渡す者
 	userController := controller.NewUserController(userUseCase)

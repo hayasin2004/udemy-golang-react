@@ -20,12 +20,12 @@ func (uv *userValidator) UserValidator(user model.User) error {
 		validation.Field(
 			&user.Email,
 			validation.Required.Error("メールアドレスは必須項目です"),
-			validation.RuneLength(1, 50).Error("メールアドレスは40文字までです"),
+			validation.RuneLength(6, 50).Error("メールアドレスは6から50文字までで入力してください"),
 		),
 		validation.Field(
 			&user.Password,
 			validation.Required.Error("パスワードは必須項目です"),
-			validation.RuneLength(6, 30).Error("パスワードは10文字までです。"),
+			validation.RuneLength(6, 30).Error("パスワードは1から10文字で入力して下さい。"),
 		),
 	)
 }

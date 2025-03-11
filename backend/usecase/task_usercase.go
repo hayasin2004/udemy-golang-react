@@ -3,6 +3,7 @@ package UseCase
 import (
 	"udemy-golang-react/model"
 	"udemy-golang-react/repository"
+	"udemy-golang-react/validator"
 )
 
 type ITaskUseCase interface {
@@ -15,10 +16,11 @@ type ITaskUseCase interface {
 
 type taskUseCase struct {
 	tr repository.ITaskRepository
+	tv validator.ITaskValidator
 }
 
-func NewTaskUseCase(tr repository.ITaskRepository) ITaskUseCase {
-	return &taskUseCase{tr}
+func NewTaskUseCase(tr repository.ITaskRepository, tv validator.ITaskValidator) ITaskUseCase {
+	return &taskUseCase{tr, tv}
 }
 
 func (tu *taskUseCase) GetAllTasks(userId uint) ([]model.TaskResponse, error) {
@@ -54,6 +56,11 @@ func (tu *taskUseCase) GetTaskById(userId uint, taskId uint) (model.TaskResponse
 }
 
 func (tu *taskUseCase) CreateTask(task model.Task) (model.TaskResponse, error) {
+	//作成完了の前にvalidationを実行
+	if err := tu.tv.TaskValidate(task); err != nil {
+		return model.TaskResponse{}, err
+	}
+
 	if err := tu.tr.CreateTask(&task); err != nil {
 		return model.TaskResponse{}, err
 	}
@@ -67,6 +74,11 @@ func (tu *taskUseCase) CreateTask(task model.Task) (model.TaskResponse, error) {
 }
 
 func (tu *taskUseCase) UpdateTask(task model.Task, userId uint, taskId uint) (model.TaskResponse, error) {
+	//タスク更新時にvalidationをはさむ
+	if err := tu.tv.TaskValidate(task); err != nil {
+		return model.TaskResponse{}, err
+	}
+
 	if err := tu.tr.UpdateTask(&task, userId, taskId); err != nil {
 		return model.TaskResponse{}, err
 	}
