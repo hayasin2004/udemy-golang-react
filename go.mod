@@ -1,6 +1,6 @@
 module udemy-golang-react
 
-go 1.24.1
+go 1.24.0
 
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
